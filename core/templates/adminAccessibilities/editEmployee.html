@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+{% load static%}
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Management System</title>
+
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="{% static "plugins/fontawesome-free/css/all.min.css" %}">
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="{% static "dist/css/adminlte.min.css" %}">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Navbar Search -->
+      <li class="nav-item">
+      
+        <div class="navbar-search-block">
+          <form class="form-inline" >
+            <div class="input-group input-group-sm">
+              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+              <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                  <i class="fas fa-search"></i>
+                </button>
+                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-info elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link text-center">
+      <span class="brand-text  font-weight-bolder">Management System</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex ">
+        <div class="info font-weight-bold">
+          <a href="#" class="d-block">Admin name</a>
+        </div>
+      </div>
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item ">
+            <a href="{% url 'core:admin' %}" class="nav-link">
+              <p>
+              Dashboard
+              </p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link">
+              <p>Employees</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+  {% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+ 
+    <div class="container-fluid">
+    <div class="card card-info mt-2" style="display: ;">
+      <div class="card-header">
+        <h3 class="card-title">General Elements</h3>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <form method="post" action="{% url 'core:updateEmployee'  %}">
+          {% csrf_token %} 
+          <div class="form-group">
+
+            <label for="firstName">First Name</label>
+            
+            {{form.first_name}}
+          </div>
+        
+          <div class="form-group">
+            <label for="lastName">Last Name</label>
+            {{form.last_name}}
+          </div>
+        
+          <div class="form-group">
+            <label for="email">Email</label>
+            {{form.email}}
+          </div>
+        
+          <div class="form-group" style="display: flex;">
+            <div class="col-sm-12">
+              
+                <label for="phoneNumber" name="">Phone Number</label>
+
+               <div class="row">
+                
+              <div class="col-12">
+                  {{form.phone_number}}
+              </div>
+              
+               </div>
+
+            </div>
+       
+        
+
+
+
+
+            
+           
+          </div>
+        
+          <div class="form-group">
+            <label for="address">Address</label>
+            {{form.address}}
+          </div>
+        
+          <div class="form-group">
+            <label for="startDate">Start Date</label>
+            {{form.start_date}}
+          </div>
+        
+          <div class="form-group">
+            <label for="hourlyRate">Hourly Rate</label>
+           {{form.hourly_rate}}
+          </div>
+        
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="role">Emplyment type</label>
+                {{form.employment_type}}
+              </div>
+            </div>
+        
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="role">Role</label>
+               {{form.role}}
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-3 mt-3">
+            <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
+          </div>
+        </form>
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+
+  {% endblock %}
+
+
+
+   
+  </div>
+  
+
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+    <div class="p-3">
+      <h5>Title</h5>
+      <p>Sidebar content</p>
+    </div>
+  </aside>
+
+<!-- ./wrapper -->
+
+<script>
+  
+
+
+
+
+  function updatePhoneNumber() {
+    var countryCode = document.getElementById("countryCode").value;
+    var phoneNumber = document.getElementById("phoneNumber").value;
+    var fullPhoneNumber = countryCode + phoneNumber;
+    document.getElementById("fullPhoneNumber").value = fullPhoneNumber;
+}
+
+</script>
+
+
+<!-- REQUIRED SCRIPTS -->
+<script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
+<!-- AdminLTE App -->
+<script src="{% static "dist/js/adminlte.min.js" %}"></script>
+</body>
+</html>
