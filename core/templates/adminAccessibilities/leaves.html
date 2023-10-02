@@ -95,14 +95,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <p>Employees</p>
             </a>
           </li>
-          <li class="nav-item menu-open">
+          <li class="nav-item ">
             <a href="{% url 'core:roles' %}" class="nav-link">
               <p>Role</p>
             </a>
           </li>
-          <li class="nav-item ">
+          <li class="nav-item menu-open">
             <a href="{% url 'core:leaves' %}" class="nav-link">
-              <p> Leaves</p>
+              <p>Leaves</p>
             </a>
           </li>
         </ul>
@@ -116,26 +116,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <div class="content-wrapper">
     <!-- Main content -->
     <div class="text-center mt-3 mt-3">
-      <button id="addEmployeeButton" class="btn btn-info">Add New Role</button>
+      <button id="addEmployeeButton" class="btn btn-info">Add New Leave</button>
     </div>
     <div class="container-fluid">
     <div class="card card-info mt-2" style="display: none;">
       <div class="card-header">
-        <h3 class="card-title"> New Role</h3>
+        <h3 class="card-title"> New Leave</h3>
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <form method="post"  action="{% url 'core:roles' %}">
+        <form method="post"  action="{% url 'core:leaves' %}">
           {% csrf_token %}
           
           <div class="form-group">
-            <label for="role_name">Role Name</label>
-            {{form.role_name}}
+            <label for="employee">Employee</label>
+            {{form.employee}}
           </div>
         
           <div class="form-group">
-            <label for="off_days"> Off Days</label>
-            {{form.off_days}}
+            <label for="Date">Date</label>
+            <input type="date" class="form-control" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="reason">Reason</label>
+            {{form.reason}}
           </div>
         
   
@@ -159,7 +163,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Role Data</h3>
+                <h3 class="card-title">Leaves Data</h3>
       
                 <div class="card-tools">
                   <div class="input-group input-group-sm" style="width: 150px;">
@@ -178,28 +182,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <table class="table table-hover text-nowrap" >
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Role Name</th>
-                      <th>Off Days</th>                 
+                      <th>Employee</th>
+                      <th>Date</th>                 
+                      <th>Reason</th>                 
                       <th> Edit</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {% for role in roles%}
+                    {% for leave in leaves%}
                     <tr >
-                      <td>{{ role.id }}</td>
-                      <td>{{ role.role_name }}</td>
-                      <td>{{ role.off_days }}</td>
+                      <td>{{ leave.employee }}</td>                    
+                      <td>{{ leave.date }}</td>
+                      <td>{{ leave.reason }}</td>
                       <td>
-                        <a href="{% url 'core:editRole' role.id %}">
+                        <a href="{% url 'core:editLeave' leave.id %}">
                           <i class="fa fa-pen" style="color: #58b2d0; cursor: pointer"></i>
                       </a>
                     </td>
                       <td>
-                        <a   onclick=confirmation({{ role.id }})  >
+                        <a   onclick=confirmation({{ leave.id }})  >
                           <i class="fa fa-trash" style="color: #ff3c00;cursor:pointer"></i>
-                          <input id="deleteRefrence-{{ role.id }}" href="{% url 'core:deleteRole' role.id %}" style="display:none">
+                          <input id="deleteRefrence-{{ leave.id }}" href="{% url 'core:deleteLeave' leave.id%}" style="display:none">
                         </a>
                     </td>
                   </tr>
@@ -244,7 +248,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       addEmployeeButton.classList.add('btn-danger'); 
     } else {
       newEmployeeForm.style.display = 'none';
-      addEmployeeButton.innerText = 'Add New Employee'; 
+      addEmployeeButton.innerText = 'Add New Leave'; 
       addEmployeeButton.classList.remove('btn-danger'); 
       addEmployeeButton.classList.add('btn-info'); 
       

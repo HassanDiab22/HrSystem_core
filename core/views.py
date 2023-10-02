@@ -5,8 +5,8 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
-from .models import Employee,Role
-from .forms import EmployeeForm,RoleForm
+from .models import Employee, Leaves,Role
+from .forms import EmployeeForm, LeaveForm,RoleForm
 # Create your views here.
 
 
@@ -22,18 +22,17 @@ class CreateRoleView(View):
         return render(request, self.template_name)
 
 class Login(View):
-    def post(self,request):
+    def post(self, request):
         try:
-                    email = request.POST.get('email')
-                    print(email)
-                    password = request.POST.get('password')
-                    print(password)
-                    user = authenticate(email=email, password=password)
-                    user = Employee.objects.get(email=email, password=password)
-                    if user:
-                        login(request, user)
-                        return HttpResponseRedirect(reverse("core:admin"))
-                    return HttpResponseRedirect(reverse("core:index"))
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse("core:admin"))
+            else:
+                return HttpResponseRedirect(reverse("core:index"))
         except Exception as e:
             print(e)
             return HttpResponse(status=400)
@@ -78,15 +77,29 @@ class RolesView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse("core:index"))
     
-    def updateRole(request, pk):
+    def updateRoleView(request, pk):
         if request.user:
-            pk = int(pk)
-            role = Role.objects.get(id=pk)
-            form = RoleForm(instance=role)
-            context = {'form': form}
-            return render(request, 'adminAccessibilities/editRole.html', context)
-        else:
-            return HttpResponseRedirect(reverse("core:index"))
+            if request.method == "GET":
+                pk = int(pk)
+                role = Role.objects.get(id=pk)
+                form = RoleForm(instance=role)
+                context = {'form': form}
+                return render(request, 'adminAccessibilities/editRole.html', context)
+            elif request.method == "POST":
+                pk = int(pk)
+                try:
+                    role = Role.objects.get(id=pk)
+                except Role.DoesNotExist:
+                    role = None
+                if role:
+                    form = RoleForm(request.POST, instance=role)
+                    if form.is_valid():
+                        form.save()
+                        return HttpResponseRedirect(reverse("core:roles"))
+            else:
+                return HttpResponseRedirect(reverse("core:index"))
+        
+    
 
 
         
@@ -163,4 +176,55 @@ def updateEmployee(request):
         
         
         
-
+class LeavesView(generic.ListView):
+    template_name="adminAccessibilities/leaves.html"
+    def get(self,request):
+        if request.user:
+            
+            leaves=Leaves.objects.all()
+            reasons=Leaves.LEAVE_CHOICES
+            form = LeaveForm()
+            context = {
+                'form':form,
+                'reasons':reasons,
+                'leaves':leaves,
+            }
+            
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+        
+    def post(self,request): 
+        form=LeaveForm(request.POST) 
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("core:leaves"))
+        return HttpResponse(status=400)
+    
+    def updateLeaveView(request, pk):
+       if request.user:
+           if request.method == "GET":
+               pk = int(pk)
+               leave = Leaves.objects.get(id=pk)
+               form = LeaveForm(instance=leave)
+               context = {'form': form}
+               return render(request, 'adminAccessibilities/editLeave.html', context)
+           elif request.method == "POST":
+               pk = int(pk)
+               try:
+                   leave = Leaves.objects.get(id=pk)
+               except Role.DoesNotExist:
+                   leave = None
+               if leave:
+                   form = LeaveForm(request.POST, instance=leave)
+                   if form.is_valid():
+                       form.save()
+                       return HttpResponseRedirect(reverse("core:leaves"))
+           else:
+               return HttpResponseRedirect(reverse("core:index"))
+           
+    def deleteLeave(request, pk):
+        pk = int(pk) 
+        leave = Leaves.objects.get(id=pk)
+        leave.delete()
+        return HttpResponseRedirect(reverse("core:leaves"))

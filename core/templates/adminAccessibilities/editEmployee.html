@@ -77,7 +77,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex ">
         <div class="info font-weight-bold">
-          <a href="#" class="d-block">Admin name</a>
+          <a href="#" class="d-block">{{ user.email}}</a>
         </div>
       </div>
       <!-- Sidebar Menu -->
@@ -93,6 +93,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <li class="nav-item menu-open">
             <a href="#" class="nav-link">
               <p>Employees</p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="{% url 'core:roles' %}" class="nav-link">
+              <p>Role</p>
+            </a>
+          </li>
+          <li class="nav-item menu-open">
+            <a href="{% url 'core:leaves' %}" class="nav-link">
+              <p>leaves</p>
             </a>
           </li>
         </ul>
