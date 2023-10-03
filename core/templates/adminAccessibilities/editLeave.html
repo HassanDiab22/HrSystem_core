@@ -37,7 +37,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       
         <div class="navbar-search-block">
           <form class="form-inline">
-            <div class="input-group input-group-sm">
+            <div class="input-group input-group-m">
               <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
               <div class="input-group-append">
                 <button class="btn btn-navbar" type="submit">
@@ -85,24 +85,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item ">
             <a href="{% url 'core:admin' %}" class="nav-link">
-              <p>
+              <i class="fas fa-home "></i>
+              <p class="ml-1">
               Dashboard
               </p>
             </a>
           </li>
           <li class="nav-item ">
-            <a href="#" class="nav-link">
-              <p>Employees</p>
+            <a href="{% url 'core:employees' %}" class="nav-link">
+              <i class="fas fa-users"></i>
+              <p class="ml-1">Employees</p>
             </a>
           </li>
-          <li class="nav-item ">
+          <li class="nav-item">
             <a href="{% url 'core:roles' %}" class="nav-link">
-              <p>Role</p>
+              <i class="fas fa-user-tie"></i>
+              <p class="ml-1">Role</p>
             </a>
           </li>
-          <li class="nav-item menu-open">
+          <li class="nav-item  menu-open">
             <a href="{% url 'core:leaves' %}" class="nav-link">
-              <p>Leaves</p>
+              <i class="fas fa-running"></i>
+              <p class="ml-1"> Leaves</p>
             </a>
           </li>
         </ul>

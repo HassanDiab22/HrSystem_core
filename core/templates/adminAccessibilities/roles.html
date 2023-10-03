@@ -37,19 +37,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
       
         <div class="navbar-search-block">
           <form class="form-inline">
-            <div class="input-group input-group-sm">
-              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group input-group-m" style="width: 400px;">
+              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" style="height: 50px;"> 
               <div class="input-group-append">
-                <button class="btn btn-navbar" type="submit">
+                <button class="btn btn-navbar" type="submit" style="height: 50px;"> 
                   <i class="fas fa-search"></i>
                 </button>
-                <button class="btn btn-navbar" type="button" data-widget="navbar-search">
+                <button class="btn btn-navbar" type="button" data-widget="navbar-search" style="height: 50px;"> 
                   <i class="fas fa-times"></i>
                 </button>
               </div>
             </div>
           </form>
         </div>
+        
       </li>
       <li class="nav-item">
         <a class="nav-link" data-widget="fullscreen" href="#" role="button">
@@ -85,24 +86,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <li class="nav-item ">
             <a href="{% url 'core:admin' %}" class="nav-link">
-              <p>
+              <i class="fas fa-home "></i>
+              <p class="ml-1">
               Dashboard
               </p>
             </a>
           </li>
           <li class="nav-item ">
-            <a href="{% url 'core:admin' %}" class="nav-link">
-              <p>Employees</p>
+            <a href="{% url 'core:employees' %}" class="nav-link">
+              <i class="fas fa-users"></i>
+              <p class="ml-1">Employees</p>
             </a>
           </li>
           <li class="nav-item menu-open">
             <a href="{% url 'core:roles' %}" class="nav-link">
-              <p>Role</p>
+              <i class="fas fa-user-tie"></i>
+              <p class="ml-1">Role</p>
             </a>
           </li>
           <li class="nav-item ">
             <a href="{% url 'core:leaves' %}" class="nav-link">
-              <p> Leaves</p>
+              <i class="fas fa-running"></i>
+              <p class="ml-1"> Leaves</p>
             </a>
           </li>
         </ul>
@@ -115,8 +120,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Main content -->
-    <div class="text-center mt-3 mt-3">
-      <button id="addEmployeeButton" class="btn btn-info">Add New Role</button>
+    <div class="text-right  mr-2">
+      <button id="addEmployeeButton" class="btn btn-info mt-2">Add New Role</button>
     </div>
     <div class="container-fluid">
     <div class="card card-info mt-2" style="display: none;">
@@ -162,8 +167,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <h3 class="card-title">Role Data</h3>
       
                 <div class="card-tools">
-                  <div class="input-group input-group-sm" style="width: 150px;">
-                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                  <form  method="GET"  action="{% url 'core:searchRole' %}">
+                    {% csrf_token %}
+                   <div class="input-group input-group-m" >
+                    <input type="text" name="table_search" id="table_search" class="form-control float-right"  placeholder="Search">
       
                     <div class="input-group-append">
                       <button type="submit" class="btn btn-default">
@@ -171,6 +178,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       </button>
                     </div>
                   </div>
+                </form>
                 </div>
               </div>
               <!-- /.card-header -->
