@@ -7,6 +7,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
 from .models import Employee, Leaves,Role
 from .forms import EmployeeForm, LeaveForm,RoleForm
+
+from django.db.models import Q
 # Create your views here.
 
 
@@ -98,6 +100,22 @@ class RolesView(generic.ListView):
                         return HttpResponseRedirect(reverse("core:roles"))
             else:
                 return HttpResponseRedirect(reverse("core:index"))
+    def searchRoles(request):
+        if request.method == "GET":
+            search_input = request.GET.get('table_search') 
+            print(search_input)
+            if search_input:
+                roles = Role.objects.filter(Q(role_name__icontains=search_input) )
+            else:
+                roles = Role.objects.all()
+            
+            form=RoleForm()
+            context={
+                'roles':roles,
+             'form':form,
+            }
+    
+            return render(request,'adminAccessibilities/roles.html',context)
         
     
 
@@ -136,11 +154,34 @@ class EmployeesView(generic.ListView):
             form.save()
             return HttpResponseRedirect(reverse("core:employees"))
         return HttpResponse(status=400)
-   
-    def put(self,request):
-        print('hello')
+
     
- 
+    def searchEmployee(request):
+        if request.method == "GET":
+            search_input = request.GET.get('table_search') 
+            print(search_input)
+            if search_input:
+                employees = Employee.objects.filter(
+                    Q(email__icontains=search_input) |
+                    Q(first_name__icontains=search_input) |
+                    Q(last_name__icontains=search_input) |
+                    Q(phone_number__icontains=search_input)
+                )
+            else:
+                employees = Employee.objects.all()
+            roles = Role.objects.all()
+            employment_type = Employee.EMPLOYMENT_TYPES
+            form = EmployeeForm()
+
+            context = {
+                'form': form,
+                'Employees': employees,
+                'roles': roles,
+                'employment_type': employment_type,
+            }
+            return render(request, 'adminAccessibilities/employees.html', context)
+    
+
     
     def updateEmployeeView(request, pk):
         pk = int(pk)
@@ -228,3 +269,22 @@ class LeavesView(generic.ListView):
         leave = Leaves.objects.get(id=pk)
         leave.delete()
         return HttpResponseRedirect(reverse("core:leaves"))
+    
+
+    def searchLeaves(request):
+        if request.method == "GET":
+            search_input = request.GET.get('table_search') 
+            print(search_input)
+            if search_input:
+                leaves = Leaves.objects.filter( Q(employee__email__icontains=search_input))
+            else:
+                leaves = Leaves.objects.all()
+            reasons=Leaves.LEAVE_CHOICES
+            form = LeaveForm()
+            context = {
+                'form':form,
+                'reasons':reasons,
+                'leaves':leaves,
+            }
+    
+            return render(request,'adminAccessibilities/leaves.html',context)
