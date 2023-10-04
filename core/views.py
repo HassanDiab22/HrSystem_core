@@ -143,73 +143,88 @@ class EmployeesView(generic.ListView):
             return HttpResponseRedirect(reverse("core:index"))
         
     def post(self,request): 
-        country_code=request.POST.get('countryCode')
-        phone_nb=request.POST.get('phone')
-        post = request.POST.copy()
-        post['phone_number'] = '+'+country_code+phone_nb
-        post['hourly_rate'] = float(request.POST.get('hourly_rate'))
-        request.POST = post
-        form=EmployeeForm(request.POST) 
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("core:employees"))
-        return HttpResponse(status=400)
+        if request.user:
+            country_code=request.POST.get('countryCode')
+            phone_nb=request.POST.get('phone')
+            post = request.POST.copy()
+            post['phone_number'] = '+'+country_code+phone_nb
+            post['hourly_rate'] = float(request.POST.get('hourly_rate'))
+            request.POST = post
+            form=EmployeeForm(request.POST) 
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("core:employees"))
+            return HttpResponse(status=400)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
 
     
     def searchEmployee(request):
-        if request.method == "GET":
-            search_input = request.GET.get('table_search') 
-            print(search_input)
-            if search_input:
-                employees = Employee.objects.filter(
-                    Q(email__icontains=search_input) |
-                    Q(first_name__icontains=search_input) |
-                    Q(last_name__icontains=search_input) |
-                    Q(phone_number__icontains=search_input)
-                )
-            else:
-                employees = Employee.objects.all()
-            roles = Role.objects.all()
-            employment_type = Employee.EMPLOYMENT_TYPES
-            form = EmployeeForm()
+        if request.user:
+            if request.method == "GET":
+                search_input = request.GET.get('table_search') 
+                print(search_input)
+                if search_input:
+                    employees = Employee.objects.filter(
+                        Q(email__icontains=search_input) |
+                        Q(first_name__icontains=search_input) |
+                        Q(last_name__icontains=search_input) |
+                        Q(phone_number__icontains=search_input)
+                    )
+                else:
+                    employees = Employee.objects.all()
+                roles = Role.objects.all()
+                employment_type = Employee.EMPLOYMENT_TYPES
+                form = EmployeeForm()
 
-            context = {
-                'form': form,
-                'Employees': employees,
-                'roles': roles,
-                'employment_type': employment_type,
-            }
-            return render(request, 'adminAccessibilities/employees.html', context)
+                context = {
+                    'form': form,
+                    'Employees': employees,
+                    'roles': roles,
+                    'employment_type': employment_type,
+                }
+                return render(request, 'adminAccessibilities/employees.html', context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
     
 
     
     def updateEmployeeView(request, pk):
-        pk = int(pk)
-        employee = Employee.objects.get(id=pk)
-        form = EmployeeForm(instance=employee)
-        context = {'form': form}
-        return render(request, 'adminAccessibilities/editEmployee.html', context)
+        if request.user:
+            pk = int(pk)
+            employee = Employee.objects.get(id=pk)
+            form = EmployeeForm(instance=employee)
+            context = {'form': form}
+            return render(request, 'adminAccessibilities/editEmployee.html', context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
     
     def deleteEmployee(request, pk):
-        pk = int(pk) 
-        employee = Employee.objects.get(id=pk)
-        employee.delete()
-        return HttpResponseRedirect(reverse("core:employees"))
+        if request.user:
+            pk = int(pk) 
+            employee = Employee.objects.get(id=pk)
+            employee.delete()
+            return HttpResponseRedirect(reverse("core:employees"))
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
 
 def updateEmployee(request):
-    if request.method == "POST":
-        email = request.POST.get('email')
-        try:
-            employee = Employee.objects.get(email=email)
-        except Employee.DoesNotExist:
-            employee = None
-        if employee:
-            form = EmployeeForm(request.POST, instance=employee)
-            if form.is_valid():
-                form.save()
-                return HttpResponseRedirect(reverse("core:employees"))
+    if request.user:
+        if request.method == "POST":
+            email = request.POST.get('email')
+            try:
+                employee = Employee.objects.get(email=email)
+            except Employee.DoesNotExist:
+                employee = None
+            if employee:
+                form = EmployeeForm(request.POST, instance=employee)
+                if form.is_valid():
+                    form.save()
+                    return HttpResponseRedirect(reverse("core:employees"))
 
-    return HttpResponse(status=400)
+        return HttpResponse(status=400)
+    else:
+        return HttpResponseRedirect(reverse("core:index"))
 
 
 
@@ -235,12 +250,15 @@ class LeavesView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse("core:index"))
         
-    def post(self,request): 
-        form=LeaveForm(request.POST) 
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("core:leaves"))
-        return HttpResponse(status=400)
+    def post(self,request):
+        if request.user:
+           form=LeaveForm(request.POST) 
+           if form.is_valid():
+               form.save()
+               return HttpResponseRedirect(reverse("core:leaves"))
+           return HttpResponse(status=400)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
     
     def updateLeaveView(request, pk):
        if request.user:
@@ -265,26 +283,33 @@ class LeavesView(generic.ListView):
                return HttpResponseRedirect(reverse("core:index"))
            
     def deleteLeave(request, pk):
-        pk = int(pk) 
-        leave = Leaves.objects.get(id=pk)
-        leave.delete()
-        return HttpResponseRedirect(reverse("core:leaves"))
+        if request.user:
+            pk = int(pk) 
+            leave = Leaves.objects.get(id=pk)
+            leave.delete()
+            return HttpResponseRedirect(reverse("core:leaves"))
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+
     
 
     def searchLeaves(request):
-        if request.method == "GET":
-            search_input = request.GET.get('table_search') 
-            print(search_input)
-            if search_input:
-                leaves = Leaves.objects.filter( Q(employee__email__icontains=search_input))
-            else:
-                leaves = Leaves.objects.all()
-            reasons=Leaves.LEAVE_CHOICES
-            form = LeaveForm()
-            context = {
-                'form':form,
-                'reasons':reasons,
-                'leaves':leaves,
-            }
-    
-            return render(request,'adminAccessibilities/leaves.html',context)
+        if request.user:
+            if request.method == "GET":
+                search_input = request.GET.get('table_search') 
+                print(search_input)
+                if search_input:
+                    leaves = Leaves.objects.filter( Q(employee__email__icontains=search_input))
+                else:
+                    leaves = Leaves.objects.all()
+                reasons=Leaves.LEAVE_CHOICES
+                form = LeaveForm()
+                context = {
+                    'form':form,
+                    'reasons':reasons,
+                    'leaves':leaves,
+                }
+
+                return render(request,'adminAccessibilities/leaves.html',context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
