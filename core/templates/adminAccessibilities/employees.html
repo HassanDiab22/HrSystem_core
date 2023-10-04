@@ -448,7 +448,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="card-tools">
                   <form  method="GET"  action="{% url 'core:searchEmployee' %}">
                     {% csrf_token %}
-                  <div class="input-group input-group-m" >
+                   <div class="input-group input-group-m" >
                     <input type="text" name="table_search" id="table_search" class="form-control float-right"  placeholder="Search">
       
                     <div class="input-group-append">
@@ -458,7 +458,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div>
                   </div>
                 </form>
-                </div>
+              </div>
               </div>
               <!-- /.card-header -->
               <div class="card-body table-responsive p-0">
