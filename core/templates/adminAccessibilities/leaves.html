@@ -13,7 +13,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- Google Font: Source Sans Pro -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 <!-- Font Awesome Icons -->
+<link rel="stylesheet" href="{% static "plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css" %}">
 <link rel="stylesheet" href="{% static "plugins/fontawesome-free/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "plugins/toastr/toastr.min.css" %}">
+
+
 <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 <!-- Theme style -->
 <link rel="stylesheet" href="{% static "dist/css/adminlte.min.css" %}">
@@ -56,11 +60,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <i class="fas fa-expand-arrows-alt"></i>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
+      
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -130,18 +130,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
       <!-- /.card-header -->
       <div class="card-body">
+       
         <form method="post"  action="{% url 'core:leaves' %}">
           {% csrf_token %}
           
           <div class="form-group">
             <label for="employee">Employee</label>
-            {{form.employee}}
+            {{form.employee }}
           </div>
+          
         
           <div class="form-group">
-            <label for="Date">Date</label>
-            <input type="date" class="form-control" name="date" required>
+            <label for="Date">Start Date</label>
+            <input type="date" class="form-control" name="start_date" required>
           </div>
+
+          <div class="form-group">
+            <label for="Date">End Date</label>
+            <input type="date" class="form-control" name="end_date" required>
+          </div>
+
+
+
+          <div class="form-group">
+            <label for="employee">Leaving Days:</label>
+            <span id="leavingDays">0</span> 
+            <input id="leaving_days" name="leaving_days" style="display: none;">
+          </div>
+          
+
           <div class="form-group">
             <label for="reason">Reason</label>
             {{form.reason}}
@@ -149,7 +166,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         
   
           <div class="text-center mt-3 mt-3">
-            <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
+            {% comment %} <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button> {% endcomment %}
+            <button type="button" onclick="checkForm()" class="btn btn-info w-25"  style="color:white">Submit</button>
           </div>
         </form>
       </div>
@@ -191,7 +209,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <thead>
                     <tr>
                       <th>Employee</th>
-                      <th>Date</th>                 
+                      <th>Start Date</th>                 
+                      <th>End Date</th>                 
+                      <th>Leaving Days</th>                 
                       <th>Reason</th>                 
                       <th> Edit</th>
                       <th>Delete</th>
@@ -201,7 +221,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     {% for leave in leaves%}
                     <tr >
                       <td>{{ leave.employee }}</td>                    
-                      <td>{{ leave.date }}</td>
+                      <td>{{ leave.start_date }}</td>
+                      <td>{{ leave.end_date }}</td>
+                      <td>{{ leave.leaving_days }}</td>
                       <td>{{ leave.reason }}</td>
                       <td>
                         <a href="{% url 'core:editLeave' leave.id %}">
@@ -240,6 +262,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
   </aside>
 
 <!-- ./wrapper -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{% static 'dist/js/demo.js' %}"></script>
 
 <script>
   
@@ -280,14 +313,284 @@ function confirmation(id){
   }
 }
 
+
+
+
+
+</script>
+
+<script>
+  {% comment %} $(document).ready(function() {
+
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'middle',
+      showConfirmButton: false,
+      timer: 3000
+    });
+    {% if message %}
+
+    $(document).Toasts('create', {
+      class: 'bg-danger abolute',
+      title: 'Insufficient Leaves',
+      subtitle: 'Error',
+      body: 'This employee doesn\'t have enough leaves left.'
+  });
+  {% endif %}
+}); {% endcomment %}
+
+
+$(document).ready(function() {
+  var Toast = Swal.mixin({
+      toast: true,
+      position: 'top',
+      showConfirmButton: false,
+      timer: 3000
+  });
+
+  {% if message %}
+  Toast.fire({
+      icon: 'error',
+      title: '<div style="text-align: center;">Insufficient Leaves</div>',
+      text: 'This employee doesn\'t have enough leaves left.'
+  });
+  {% endif %}
+});
+
+
+
+
+
+
+
+
+
+
+
+  $(function() {
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-left',
+      showConfirmButton: false,
+      timer: 3000
+    });
+
+    $('.swalDefaultSuccess').click(function() {
+      Toast.fire({
+        icon: 'success',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultInfo').click(function() {
+      Toast.fire({
+        icon: 'info',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultError').click(function() {
+      Toast.fire({
+        icon: 'error',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultWarning').click(function() {
+      Toast.fire({
+        icon: 'warning',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.swalDefaultQuestion').click(function() {
+      Toast.fire({
+        icon: 'question',
+        title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+
+    $('.toastrDefaultSuccess').click(function() {
+      toastr.success('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultInfo').click(function() {
+      toastr.info('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultError').click(function() {
+      toastr.error('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+    $('.toastrDefaultWarning').click(function() {
+      toastr.warning('Lorem ipsum dolor sit amet, consetetur sadipscing elitr.')
+    });
+
+    $('.toastsDefaultDefault').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultTopLeft').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'topLeft',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultBottomRight').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'bottomRight',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultBottomLeft').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        position: 'bottomLeft',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultAutohide').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        autohide: true,
+        delay: 750,
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultNotFixed').click(function() {
+      $(document).Toasts('create', {
+        title: 'Toast Title',
+        fixed: false,
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultFull').click(function() {
+      $(document).Toasts('create', {
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        icon: 'fas fa-envelope fa-lg',
+      })
+    });
+    $('.toastsDefaultFullImage').click(function() {
+      $(document).Toasts('create', {
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        image: '../../dist/img/user3-128x128.jpg',
+        imageAlt: 'User Picture',
+      })
+    });
+    $('.toastsDefaultSuccess').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-success',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultInfo').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-info',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultWarning').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-warning',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultDanger').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-danger',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+    $('.toastsDefaultMaroon').click(function() {
+      $(document).Toasts('create', {
+        class: 'bg-maroon',
+        title: 'Toast Title',
+        subtitle: 'Subtitle',
+        body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+      })
+    });
+  });
 </script>
 
 
-<!-- REQUIRED SCRIPTS -->
-<script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
-<!-- Bootstrap 4 -->
-<script src="{% static "plugins/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
-<!-- AdminLTE App -->
-<script src="{% static "dist/js/adminlte.min.js" %}"></script>
+
+
+
+<script type="text/javascript">
+
+  function checkForm(){
+    if(document.getElementById("leavingDays").textContent != "Invalid dates"){
+      document.forms[0].submit();
+    }else{
+      console.log('error is here')
+      toastr.error('Invalid dates');
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+
+    
+   
+    function calculateLeavingDays() {
+      const startDate = new Date(document.querySelector('input[name="start_date"]').value);
+      const endDate = new Date(document.querySelector('input[name="end_date"]').value);
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        if(endDate - startDate > 0){
+          const timeDiff = endDate - startDate;
+        
+        const currentDate = new Date(startDate);
+        
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+       
+
+       let weekndDaysCount=0;
+
+        for (let i = 0; i <= daysDiff; i++) {
+          console.log(currentDate.toLocaleDateString('en-US', {weekday: 'long'}));
+          if(currentDate.toLocaleDateString('en-US', {weekday: 'long'}) =="Saturday" || currentDate.toLocaleDateString('en-US', {weekday: 'long'})=="Sunday"){
+            weekndDaysCount++;
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      
+         console.log(weekndDaysCount)
+        document.getElementById("leavingDays").textContent = daysDiff  - weekndDaysCount; 
+        document.getElementById("leaving_days").value = daysDiff  - weekndDaysCount; 
+        }else {
+          document.getElementById("leavingDays").textContent = "Invalid dates";
+        }
+      } else {
+        document.getElementById("leavingDays").textContent = "Invalid dates";
+      }
+    }
+
+    document.querySelector('input[name="start_date"]').addEventListener("change", calculateLeavingDays);
+    document.querySelector('input[name="end_date"]').addEventListener("change", calculateLeavingDays);
+
+
+    
+  });
+</script>
+
+
+
+
+
+
+
+
+
 </body>
 </html>

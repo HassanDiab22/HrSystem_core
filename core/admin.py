@@ -12,9 +12,9 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_filter=['role','start_date','leaves_left','role','employment_type']
 
 class LeavesAdmin(admin.ModelAdmin):
-    list_display=['employee','date','reason']
-    search_fields=['employee','date']
-    list_filter=['date','reason']   
+    list_display=['employee','start_date','end_date','reason']
+    search_fields=['employee','start_date','end_date']
+    list_filter=['start_date','end_date','reason']   
 
 
 class CountryAdmin(admin.ModelAdmin):

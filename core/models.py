@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import date
 from .managers import CustomUserManger
 from phonenumber_field.modelfields import PhoneNumberField
 # Create your models here.
@@ -51,17 +52,21 @@ class Employee(AbstractUser):
     def __str__(self):
         return self.email
     
-class Leaves(BaseModel):
+
+class Leaves(models.Model):
     LEAVE_CHOICES = [
-       ("sick", "Sick"),
-       ("personal", "Personal"),
+        ("sick", "Sick"),
+        ("personal", "Personal"),
     ]
 
-    employee= models.ForeignKey(Employee, on_delete=models.CASCADE)
-    date=models.DateField()
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    start_date = models.DateField(default=date.today)
+    end_date = models.DateField()
+    leaving_days = models.IntegerField(default=0, blank=True, null=True)
     reason = models.CharField(max_length=20, choices=LEAVE_CHOICES)
-    
+
     def __str__(self):
-        return f"{self.employee} - {self.date} - {self.get_reason_display()}"   
+        return f"{self.employee} - {self.start_date} - {self.end_date} - {self.leaving_days} - {self.get_reason_display()}"
+
 
 

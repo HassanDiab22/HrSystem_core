@@ -5,8 +5,10 @@ from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
+import time
 from .models import Employee, Leaves,Role
 from .forms import EmployeeForm, LeaveForm,RoleForm
+from django.contrib import messages
 
 from django.db.models import Q
 # Create your views here.
@@ -126,7 +128,8 @@ class EmployeesView(generic.ListView):
     def get(self,request):
         if request.user:
             
-            employees=Employee.objects.all()
+            employees=Employee.objects.filter(is_superuser=False,is_staff=False)
+            
             roles=Role.objects.all()
             employment_type = Employee.EMPLOYMENT_TYPES
             print(employment_type)
@@ -233,32 +236,41 @@ def updateEmployee(request):
         
         
 class LeavesView(generic.ListView):
-    template_name="adminAccessibilities/leaves.html"
-    def get(self,request):
+    template_name = "adminAccessibilities/leaves.html"
+
+    def get(self, request):
         if request.user:
-            
-            leaves=Leaves.objects.all()
-            reasons=Leaves.LEAVE_CHOICES
+            leaves = Leaves.objects.all()
+            reasons = Leaves.LEAVE_CHOICES
             form = LeaveForm()
             context = {
-                'form':form,
-                'reasons':reasons,
-                'leaves':leaves,
+                'form': form,
+                'reasons': reasons,
+                'leaves': leaves,
             }
-            
-            return render(request,self.template_name,context)
+            return render(request, self.template_name, context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
-        
-    def post(self,request):
+
+    def post(self, request):
         if request.user:
-           form=LeaveForm(request.POST) 
-           if form.is_valid():
-               form.save()
-               return HttpResponseRedirect(reverse("core:leaves"))
-           return HttpResponse(status=400)
+            form = LeaveForm(request.POST)
+            employee_id = request.POST.get('employee')
+            leaving_days = request.POST.get('leaving_days')
+            employee = Employee.objects.get(id=employee_id)
+            employee_leaves_left = employee.leaves_left
+
+            if employee_leaves_left > 0:
+                if form.is_valid():
+                    employee.leaves_left = employee_leaves_left - int(leaving_days)
+                    employee.save()
+                    form.save()
+                    return HttpResponseRedirect(reverse("core:leaves"))
+            else:
+                return HttpResponseRedirect(reverse("core:leaves"))
         else:
-            return HttpResponseRedirect(reverse("core:index"))
+                return HttpResponseRedirect(reverse("core:index"))
+
     
     def updateLeaveView(request, pk):
        if request.user:
@@ -304,6 +316,7 @@ class LeavesView(generic.ListView):
                     leaves = Leaves.objects.all()
                 reasons=Leaves.LEAVE_CHOICES
                 form = LeaveForm()
+                
                 context = {
                     'form':form,
                     'reasons':reasons,

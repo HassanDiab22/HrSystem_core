@@ -56,11 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <i class="fas fa-expand-arrows-alt"></i>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
+      
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -127,6 +123,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
       <!-- /.card-header -->
       <div class="card-body">
+        
         <form method="post"  >
           {% csrf_token %}
          
@@ -136,9 +133,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </div>
        
           <div class="form-group">
-            <label for="Date">Date</label>
-            <input type="date" class="form-control" name="date" value="{{form.date.value.year }}-{{form.date.value.month}}-{{form.date.value.day}}" required>
+            <label for="Date">Start Date</label>
+            {% comment %} <input type="date" class="form-control" name="date" required value="{{form.start_date.value.year }}-{{form.start_date.value.month}}-{{form.start_date.value.day}}" > {% endcomment %}
+            {{form.start_date}}   
           </div>
+          
+          <div class="form-group">
+            <label for="Date">End Date</label>
+            {% comment %} <input type="date" class="form-control" name="date" value="{{form.end_date.value.year }}-{{form.end_date.value.month}}-{{form.end_date.value.day}}" required> {% endcomment %}
+                 {{form.end_date}}   
+          </div>
+
+
+
+          <div class="form-group">
+            <label for="employee">Leaving Days:</label>
+            <span id="leavingDays">{{form.leaving_days.value}}</span> 
+            <input id="leaving_days" name="leaving_days" style="display: none;">
+          </div>
+
           <div class="form-group">
             <label for="reason">Reason</label>
             {{form.reason}}
@@ -147,6 +160,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         
   
           <div class="text-center mt-3 mt-3">
+            <a href="{% url 'core:leaves' %}"><button type="submit" class="btn btn-danger w-25"  style="color:white">Cancel</button></a>
             <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
           </div>
         </form>
@@ -216,6 +230,75 @@ function confirmation(id){
 
 </script>
 
+
+
+
+
+<script type="text/javascript">
+
+  function checkForm(){
+    if(document.getElementById("leavingDays").textContent != "Invalid dates"){
+      document.forms[0].submit();
+    }else{
+      console.log('error is here')
+      toastr.error('Invalid dates');
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+
+    
+   
+    function calculateLeavingDays() {
+      const startDate = new Date(document.querySelector('input[name="start_date"]').value);
+      const endDate = new Date(document.querySelector('input[name="end_date"]').value);
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        if(endDate - startDate > 0){
+          const timeDiff = endDate - startDate;
+        
+        const currentDate = new Date(startDate);
+        
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24);
+
+       
+
+       let weekndDaysCount=0;
+
+        for (let i = 0; i <= daysDiff; i++) {
+          console.log(currentDate.toLocaleDateString('en-US', {weekday: 'long'}));
+          if(currentDate.toLocaleDateString('en-US', {weekday: 'long'}) =="Saturday" || currentDate.toLocaleDateString('en-US', {weekday: 'long'})=="Sunday"){
+            weekndDaysCount++;
+          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      
+         console.log(weekndDaysCount)
+        document.getElementById("leavingDays").textContent = daysDiff  - weekndDaysCount; 
+
+          if({{form.leaving_days.value}} > (daysDiff  - weekndDaysCount)){
+            document.getElementById("leaving_days").value= (daysDiff  - weekndDaysCount)-{{form.leaving_days.value}};
+          }else{
+            document.getElementById("leaving_days").value= {{form.leaving_days.value}} -(daysDiff  - weekndDaysCount);
+          }
+
+        document.getElementById("leaving_days").value = daysDiff  - weekndDaysCount; 
+        }else {
+          document.getElementById("leavingDays").textContent = "Invalid dates";
+        }
+      } else {
+        document.getElementById("leavingDays").textContent = "Invalid dates";
+      }
+    }
+
+    document.querySelector('input[name="start_date"]').addEventListener("change", calculateLeavingDays);
+    document.querySelector('input[name="end_date"]').addEventListener("change", calculateLeavingDays);
+
+
+    
+  });
+</script>
 
 <!-- REQUIRED SCRIPTS -->
 <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
