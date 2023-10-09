@@ -1,4 +1,4 @@
-from django.forms import ModelForm,Select,TextInput,DateInput
+from django.forms import DateField, ModelForm,Select,TextInput,DateInput,NumberInput,DateTimeInput
 from .models import Employee,Role,Leaves
 
 class EmployeeForm(ModelForm):
@@ -30,7 +30,8 @@ class EmployeeForm(ModelForm):
                 'class': "form-control"
                 }),
             'start_date': DateInput(attrs={
-                'class': "form-control"
+                'class': "form-control",
+                'type':'date'
                 }),
             'hourly_rate': TextInput(attrs={
                 'class': "form-control"
@@ -59,11 +60,11 @@ class RoleForm(ModelForm):
         }
 
 class LeaveForm(ModelForm):
-    
+
     class Meta:
         
         model = Leaves
-        fields = ['employee','date','reason']
+        fields = ['employee','start_date','end_date','leaving_days','reason']
         widgets = {
                      
            
@@ -73,9 +74,17 @@ class LeaveForm(ModelForm):
                 'reason': Select(attrs={
                 'class': "form-control"
                 }),
-                'date': DateInput(attrs={
-                'class': "form-control"
+                'start_date': DateInput(attrs={
+                'class': "form-control",
+                'type':'date'
                 }),
+                'end_date': DateInput(attrs={
+                'class': "form-control",
+                'type':'date'
+                }),
+               
+                
+                
            
         }
 

@@ -56,11 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <i class="fas fa-expand-arrows-alt"></i>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-          <i class="fas fa-th-large"></i>
-        </a>
-      </li>
+      
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -142,6 +138,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         
   
           <div class="text-center mt-3 mt-3">
+            <a href="{% url 'core:roles' %}"><button type="submit" class="btn btn-danger w-25"  style="color:white">Cancel</button></a>
             <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
           </div>
         </form>
