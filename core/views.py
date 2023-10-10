@@ -46,7 +46,17 @@ class AdminView(View):
 
     def get(self,request):
         if request.user:
-            return render(request,self.template_name)
+            admins_count = Employee.objects.filter(is_superuser=True).count()
+            employees_count = Employee.objects.filter(is_superuser=False, is_staff=False).count()
+            leaves_today_count = Leaves.objects.filter(start_date=time.strftime("%Y-%m-%d")).count()
+            roles_count = Role.objects.all().count()
+            context = {
+                'admins_count': admins_count,
+                'employees_count': employees_count,
+                'leaves_count': leaves_today_count,
+                'roles_count': roles_count,
+            }
+            return render(request, self.template_name, context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
              
