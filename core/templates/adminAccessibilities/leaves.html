@@ -131,7 +131,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- /.card-header -->
       <div class="card-body">
        
-        <form method="post"  action="{% url 'core:leaves' %}">
+        <form method="post" id="addNewLeave" action="{% url 'core:leaves' %}">
           {% csrf_token %}
           
           <div class="form-group">
@@ -529,7 +529,8 @@ $(document).ready(function() {
 
   function checkForm(){
     if(document.getElementById("leavingDays").textContent != "Invalid dates"){
-      document.forms[0].submit();
+      console.log('submited');
+      document.forms[1].submit();
     }else{
       console.log('error is here')
       toastr.error('Invalid dates');

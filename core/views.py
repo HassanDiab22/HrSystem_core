@@ -254,18 +254,19 @@ class LeavesView(generic.ListView):
 
     def post(self, request):
         if request.user:
+            print("in the post view")
             form = LeaveForm(request.POST)
             employee_id = request.POST.get('employee')
             leaving_days = request.POST.get('leaving_days')
             employee = Employee.objects.get(id=employee_id)
             employee_leaves_left = employee.leaves_left
 
-            if employee_leaves_left > 0:
-                if form.is_valid():
-                    employee.leaves_left = employee_leaves_left - int(leaving_days)
-                    employee.save()
-                    form.save()
-                    return HttpResponseRedirect(reverse("core:leaves"))
+            
+            if form.is_valid():
+                employee.leaves_left = employee_leaves_left - int(leaving_days)
+                employee.save()
+                form.save()
+                return HttpResponseRedirect(reverse("core:leaves"))
             else:
                 return HttpResponseRedirect(reverse("core:leaves"))
         else:
@@ -288,7 +289,15 @@ class LeavesView(generic.ListView):
                    leave = None
                if leave:
                    form = LeaveForm(request.POST, instance=leave)
+                   employee_id = request.POST.get('employee')
+                   leaving_days = request.POST.get('leaving_days')
+                   diffrance_days = request.POST.get('diffrance_days')
+                   employee = Employee.objects.get(id=employee_id)
+                   employee_leaves_left = employee.leaves_left
                    if form.is_valid():
+                       
+                       employee.leaves_left = employee_leaves_left - int(diffrance_days)
+                       employee.save()
                        form.save()
                        return HttpResponseRedirect(reverse("core:leaves"))
            else:
