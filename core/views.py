@@ -50,7 +50,13 @@ class AdminView(View):
             employees_count = Employee.objects.filter(is_superuser=False, is_staff=False).count()
             leaves_today_count = Leaves.objects.filter(start_date=time.strftime("%Y-%m-%d")).count()
             roles_count = Role.objects.all().count()
+
+            leaves=Leaves.objects.all()
+            employees=Employee.objects.all()
+
             context = {
+                'leaves': leaves,
+                'employees': employees,
                 'admins_count': admins_count,
                 'employees_count': employees_count,
                 'leaves_count': leaves_today_count,
@@ -60,23 +66,6 @@ class AdminView(View):
         else:
             return HttpResponseRedirect(reverse("core:index"))
 
-
-
-
-class CalendarView(generic.ListView):
-    template_name="adminAccessibilities/calendar.html"
-    def get(self,request):
-        if request.user:
-            leaves=Leaves.objects.all()
-            employees=Employee.objects.all()
-            context={
-               "leaves":leaves,
-               "employees":employees
-            }
-            return render(request,self.template_name,context)
-        else:
-            return HttpResponseRedirect(reverse("core:index"))
-        
 class RolesView(generic.ListView):
     template_name="adminAccessibilities/roles.html"
     def get(self,request):
