@@ -64,7 +64,7 @@ class LeaveForm(ModelForm):
     class Meta:
         
         model = Leaves
-        fields = ['employee','start_date','end_date','leaving_days','reason']
+        fields = ['employee','start_date','end_date','leaving_days','reason',]
         widgets = {
                      
            

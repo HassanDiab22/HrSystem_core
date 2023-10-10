@@ -150,6 +150,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <label for="employee">Leaving Days:</label>
             <span id="leavingDays">{{form.leaving_days.value}}</span> 
             <input id="leaving_days" name="leaving_days" style="display: none;">
+            <input id="diffrance_days" name="diffrance_days" style="display: none;">
           </div>
 
           <div class="form-group">
@@ -278,9 +279,11 @@ function confirmation(id){
         document.getElementById("leavingDays").textContent = daysDiff  - weekndDaysCount; 
 
           if({{form.leaving_days.value}} > (daysDiff  - weekndDaysCount)){
-            document.getElementById("leaving_days").value= (daysDiff  - weekndDaysCount)-{{form.leaving_days.value}};
+            document.getElementById("diffrance_days").value= (daysDiff  - weekndDaysCount)-{{form.leaving_days.value}};
+            console.log(document.getElementById("diffrance_days").value)
           }else{
-            document.getElementById("leaving_days").value= {{form.leaving_days.value}} -(daysDiff  - weekndDaysCount);
+            document.getElementById("diffrance_days").value= {{form.leaving_days.value}} -(daysDiff  - weekndDaysCount);
+            console.log(document.getElementById("diffrance_days").value)
           }
 
         document.getElementById("leaving_days").value = daysDiff  - weekndDaysCount; 
