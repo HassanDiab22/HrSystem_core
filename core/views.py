@@ -59,7 +59,24 @@ class AdminView(View):
             return render(request, self.template_name, context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
-             
+
+
+
+
+class CalendarView(generic.ListView):
+    template_name="adminAccessibilities/calendar.html"
+    def get(self,request):
+        if request.user:
+            leaves=Leaves.objects.all()
+            employees=Employee.objects.all()
+            context={
+               "leaves":leaves,
+               "employees":employees
+            }
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+        
 class RolesView(generic.ListView):
     template_name="adminAccessibilities/roles.html"
     def get(self,request):
