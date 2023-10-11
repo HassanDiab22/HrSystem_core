@@ -6,11 +6,9 @@ from . import views
 app_name = "core"
 urlpatterns = [
     path("", views.indexView.as_view(), name="index"),
-    path("newrole/", views.CreateRoleView.as_view(), name="create_role"),
     path("login/", views.Login.as_view(), name="login"),
     path("employees/", views.EmployeesView.as_view(), name="employees"),
     path("roles/", views.RolesView.as_view(), name="roles"),
-    path("calendar/", views.CalendarView.as_view(), name="calendar"),
     path("leaves/", views.LeavesView.as_view(), name="leaves"),
     path("adminpage/", views.AdminView.as_view(), name="admin"),
     path("editEmployee/<str:pk>/", views.EmployeesView.updateEmployeeView, name="editEmployee"),
