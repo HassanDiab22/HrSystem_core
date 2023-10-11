@@ -4,6 +4,7 @@ from django.views import View
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import time
 from .models import Employee, Leaves,Role
@@ -11,12 +12,13 @@ from .forms import EmployeeForm, LeaveForm,RoleForm
 from django.contrib import messages
 
 from django.db.models import Q
-# Create your views here.
 
 
 class indexView(View):
     template_name = "index.html"
     def get(self,request):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("core:admin"))
         return render(request, self.template_name)
 
 
@@ -40,12 +42,19 @@ class Login(View):
         except Exception as e:
             print(e)
             return HttpResponse(status=400)
+        
+class Logout(View):
 
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse("core:index"))
+    
 class AdminView(View):
-    template_name = "adminPage.html"
+    template_name = "dashboard.html"
 
     def get(self,request):
-        if request.user:
+        if request.user.is_authenticated:
+            print(request.user.is_authenticated)
             admins_count = Employee.objects.filter(is_superuser=True).count()
             employees_count = Employee.objects.filter(is_superuser=False, is_staff=False).count()
             leaves_today_count = Leaves.objects.filter(start_date=time.strftime("%Y-%m-%d")).count()
@@ -55,6 +64,7 @@ class AdminView(View):
             employees=Employee.objects.all()
 
             context = {
+                'active_menu': 'dashboard',
                 'leaves': leaves,
                 'employees': employees,
                 'admins_count': admins_count,
@@ -67,12 +77,17 @@ class AdminView(View):
             return HttpResponseRedirect(reverse("core:index"))
 
 class RolesView(generic.ListView):
+    
     template_name="adminAccessibilities/roles.html"
+    
     def get(self,request):
-        if request.user:
+        
+        if request.user.is_authenticated:
+            print(request.user.is_authenticated)
             roles=Role.objects.all()
             form=RoleForm()
             context={
+                'active_menu': 'roles',
                 'roles':roles,
              'form':form,
             }
@@ -80,7 +95,7 @@ class RolesView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse("core:index"))
     def post(self,request):
-        if request.user:
+        if request.user.is_authenticated:
             form=RoleForm(request.POST)
         if form.is_valid():
             form.save()
@@ -89,7 +104,7 @@ class RolesView(generic.ListView):
             return HttpResponseRedirect(reverse("core:index"))
         
     def deleteRole(request, pk):
-        if request.user:
+        if request.user.is_authenticated:
             pk = int(pk) 
             role = Role.objects.get(id=pk)
             role.delete()
@@ -98,7 +113,7 @@ class RolesView(generic.ListView):
             return HttpResponseRedirect(reverse("core:index"))
     
     def updateRoleView(request, pk):
-        if request.user:
+        if request.user.is_authenticated:
             if request.method == "GET":
                 pk = int(pk)
                 role = Role.objects.get(id=pk)
@@ -142,7 +157,7 @@ class RolesView(generic.ListView):
 class EmployeesView(generic.ListView):
     template_name="adminAccessibilities/employees.html"
     def get(self,request):
-        if request.user:
+        if request.user.is_authenticated:
             
             employees=Employee.objects.filter(is_superuser=False,is_staff=False)
             
@@ -151,6 +166,7 @@ class EmployeesView(generic.ListView):
             print(employment_type)
             form = EmployeeForm()
             context = {
+                'active_menu': 'employees',
                 'form':form,
                 'Employees':employees,
                 'roles':roles,
@@ -162,7 +178,7 @@ class EmployeesView(generic.ListView):
             return HttpResponseRedirect(reverse("core:index"))
         
     def post(self,request): 
-        if request.user:
+        if request.user.is_authenticated:
             country_code=request.POST.get('countryCode')
             phone_nb=request.POST.get('phone')
             post = request.POST.copy()
@@ -179,7 +195,7 @@ class EmployeesView(generic.ListView):
 
     
     def searchEmployee(request):
-        if request.user:
+        if request.user.is_authenticated:
             if request.method == "GET":
                 search_input = request.GET.get('table_search') 
                 print(search_input)
@@ -197,6 +213,7 @@ class EmployeesView(generic.ListView):
                 form = EmployeeForm()
 
                 context = {
+                    'active_menu': 'employees',
                     'form': form,
                     'Employees': employees,
                     'roles': roles,
@@ -209,17 +226,30 @@ class EmployeesView(generic.ListView):
 
     
     def updateEmployeeView(request, pk):
-        if request.user:
-            pk = int(pk)
-            employee = Employee.objects.get(id=pk)
-            form = EmployeeForm(instance=employee)
-            context = {'form': form}
-            return render(request, 'adminAccessibilities/editEmployee.html', context)
+        if request.user.is_authenticated:
+            if request.method == "GET":
+                pk = int(pk)
+                employee = Employee.objects.get(id=pk)
+                form = EmployeeForm(instance=employee)
+                context = {'form': form,
+                           'active_menu': 'employees',}
+                return render(request, 'adminAccessibilities/editEmployee.html', context)
+            if request.method == "POST":    
+                email = request.POST.get('email')
+                try:
+                    employee = Employee.objects.get(email=email)
+                except Employee.DoesNotExist:
+                    employee = None
+                if employee:
+                    form = EmployeeForm(request.POST, instance=employee)
+                    if form.is_valid():
+                        form.save()
+                        return HttpResponseRedirect(reverse("core:employees"))
         else:
             return HttpResponseRedirect(reverse("core:index"))
     
     def deleteEmployee(request, pk):
-        if request.user:
+        if request.user.is_authenticated:
             pk = int(pk) 
             employee = Employee.objects.get(id=pk)
             employee.delete()
@@ -227,27 +257,7 @@ class EmployeesView(generic.ListView):
         else:
             return HttpResponseRedirect(reverse("core:index"))
 
-def updateEmployee(request):
-    if request.user:
-        if request.method == "POST":
-            email = request.POST.get('email')
-            try:
-                employee = Employee.objects.get(email=email)
-            except Employee.DoesNotExist:
-                employee = None
-            if employee:
-                form = EmployeeForm(request.POST, instance=employee)
-                if form.is_valid():
-                    form.save()
-                    return HttpResponseRedirect(reverse("core:employees"))
 
-        return HttpResponse(status=400)
-    else:
-        return HttpResponseRedirect(reverse("core:index"))
-
-
-
-   
         
         
         
@@ -255,11 +265,12 @@ class LeavesView(generic.ListView):
     template_name = "adminAccessibilities/leaves.html"
 
     def get(self, request):
-        if request.user:
+        if request.user.is_authenticated:
             leaves = Leaves.objects.all()
             reasons = Leaves.LEAVE_CHOICES
             form = LeaveForm()
             context = {
+                'active_menu': 'leaves',
                 'form': form,
                 'reasons': reasons,
                 'leaves': leaves,
@@ -269,7 +280,7 @@ class LeavesView(generic.ListView):
             return HttpResponseRedirect(reverse("core:index"))
 
     def post(self, request):
-        if request.user:
+        if request.user.is_authenticated:
             print("in the post view")
             form = LeaveForm(request.POST)
             employee_id = request.POST.get('employee')
@@ -290,12 +301,13 @@ class LeavesView(generic.ListView):
 
     
     def updateLeaveView(request, pk):
-       if request.user:
+       if request.user.is_authenticated:
            if request.method == "GET":
                pk = int(pk)
                leave = Leaves.objects.get(id=pk)
                form = LeaveForm(instance=leave)
-               context = {'form': form}
+               context = {'form': form,
+                          'active_menu': 'leaves',}
                return render(request, 'adminAccessibilities/editLeave.html', context)
            elif request.method == "POST":
                pk = int(pk)
@@ -320,7 +332,7 @@ class LeavesView(generic.ListView):
                return HttpResponseRedirect(reverse("core:index"))
            
     def deleteLeave(request, pk):
-        if request.user:
+        if request.user.is_authenticated:
             pk = int(pk) 
             leave = Leaves.objects.get(id=pk)
             leave.delete()
@@ -331,7 +343,7 @@ class LeavesView(generic.ListView):
     
 
     def searchLeaves(request):
-        if request.user:
+        if request.user.is_authenticated:
             if request.method == "GET":
                 search_input = request.GET.get('table_search') 
                 print(search_input)
@@ -343,6 +355,7 @@ class LeavesView(generic.ListView):
                 form = LeaveForm()
                 
                 context = {
+                    'active_menu': 'leaves',
                     'form':form,
                     'reasons':reasons,
                     'leaves':leaves,
