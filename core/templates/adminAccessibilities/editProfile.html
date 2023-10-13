@@ -36,8 +36,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
       <!-- /.card-header -->
       <div class="card-body">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data" id="profileForm">
           {% csrf_token %} 
+
+          <div class="form-group">
+            <label for="exampleInputFile">Profile Picture</label>
+            <div class="input-group">
+            <div class="custom-file">
+                
+            <input type="file" class="custom-file-input" name="profile_picture" id="exampleInputFile" accept="image/*">
+            
+            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+            </div>
+            <div class="input-group-append">
+            <span class="input-group-text">Upload</span>
+            </div>
+            </div>
+            </div>
+
+
           <div class="form-group">
 
             <label for="firstName">First Name</label>
@@ -55,20 +72,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
             {{form.email}}
           </div>
         
-          <div class="form-group" style="display: flex;">
-            <div class="col-sm-12">
+          <div class="form-group" >
+            
               
                 <label for="phoneNumber" name="">Phone Number</label>
 
-               <div class="row">
-                
-              <div class="col-12">
-                  {{form.phone_number}}
-              </div>
-              
-               </div>
+               
 
-            </div>
+
+                
+                
+            
+                  {{form.phone_number}}
+        
+              
+           
+
+    
        
         
 
@@ -83,7 +103,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <label for="address">Address</label>
             {{form.address}}
           </div>
-        
+
+          
+          <div {% if not user.is_superuser %}style="display: none"  {%endif%}>
           <div class="form-group">
             <label for="startDate">Start Date</label>
             {{form.start_date}}  
@@ -109,11 +131,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </div>
             </div>
           </div>
+        </div>
+        
+         
           <div class="text-center mt-3 mt-3">
-            <a href="{% url 'core:employees' %}" class="btn btn-danger w-25">
-              Cancel
-           </a>
-            <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
+            <a href="{% url 'core:profile' %}" class="btn btn-danger w-25">
+               Cancel
+            </a>
+            <button type="submit" class="btn btn-info w-25" style="color: white">Submit</button>
+            
           </div>
         </form>
       </div>
@@ -154,7 +180,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
     document.getElementById("fullPhoneNumber").value = fullPhoneNumber;
 }
 
+
+    function submitForm() {
+        const form = document.getElementById('profileForm');
+        if (form) {
+            form.submit();
+        }
+    }
+  
 </script>
+
 
 
 <!-- REQUIRED SCRIPTS -->

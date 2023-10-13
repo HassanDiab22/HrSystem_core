@@ -72,7 +72,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         
   
           <div class="text-center mt-3 mt-3">
-            <a href="{% url 'core:leaves' %}"><button type="submit" class="btn btn-danger w-25"  style="color:white">Cancel</button></a>
+            <a href="{% url 'core:leaves' %}" class="btn btn-danger w-25">
+              Cancel
+           </a>
             <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
           </div>
         </form>

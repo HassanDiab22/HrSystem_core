@@ -2,6 +2,12 @@ from django.contrib import admin
 from .models import Employee,Leaves,Country,Role
 
 # Register your models here
+
+
+
+
+
+
 class RoleAdmin(admin.ModelAdmin):
     list_display=['role_name','off_days']
     search_fields=['role_name']

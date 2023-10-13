@@ -3,8 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from datetime import date
 from .managers import CustomUserManger
 from phonenumber_field.modelfields import PhoneNumberField
+from django.contrib.auth.models import Group
 # Create your models here.
+
+
+
+
 class BaseModel(models.Model):
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -31,6 +37,8 @@ class Employee(AbstractUser):
        ("part-time", "Part-time"),
        ("full-time", "Full-time")
     ]
+    profile_picture_title = models.CharField(max_length=250,blank=True, null=True,default='defaultProfielPicture.jpg')
+    profile_picture = models.ImageField(upload_to ='static/uploads/',blank=True, null=True,default='uploads/defaultProfielPicture.jpg')
     username = models.CharField(max_length=10, null=True, blank=True)
     first_name = models.CharField(max_length=20,null=True,blank=True)
     last_name = models.CharField(max_length=20,null=True,blank=True )
