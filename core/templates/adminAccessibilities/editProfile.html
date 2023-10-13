@@ -36,6 +36,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
       <!-- /.card-header -->
       <div class="card-body">
+        
         <form method="post" enctype="multipart/form-data" id="profileForm">
           {% csrf_token %} 
 
@@ -105,7 +106,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </div>
 
           
-          <div {% if not user.is_superuser %}style="display: none"  {%endif%}>
+          {% if user.is_superuser %}
           <div class="form-group">
             <label for="startDate">Start Date</label>
             {{form.start_date}}  
@@ -131,7 +132,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </div>
             </div>
           </div>
-        </div>
+        {% endif %}
         
          
           <div class="text-center mt-3 mt-3">

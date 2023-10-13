@@ -36,10 +36,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="card card-primary card-outline">
             <div class="card-body box-profile">
               <div class="text-center">
-               
                 <img class="profile-user-img img-fluid img-circle"
-                src="{% static 'uploads/'|add:user.profile_picture_title %}"
-                     alt="User profile picture">
+                src="/media/{{ user.profile_picture_title }}"
+                alt="User profile picture">
               </div>
 
               <h3 class="profile-username text-center">{{user.first_name}} {{user.last_name}}</h3>

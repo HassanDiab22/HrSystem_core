@@ -38,7 +38,7 @@ class Employee(AbstractUser):
        ("full-time", "Full-time")
     ]
     profile_picture_title = models.CharField(max_length=250,blank=True, null=True,default='defaultProfielPicture.jpg')
-    profile_picture = models.ImageField(upload_to ='static/uploads/',blank=True, null=True,default='uploads/defaultProfielPicture.jpg')
+    profile_picture = models.ImageField(upload_to ='',blank=True, null=True,default='defaultProfielPicture.jpg')
     username = models.CharField(max_length=10, null=True, blank=True)
     first_name = models.CharField(max_length=20,null=True,blank=True)
     last_name = models.CharField(max_length=20,null=True,blank=True )
