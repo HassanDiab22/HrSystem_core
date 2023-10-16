@@ -26,38 +26,78 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <div class="content-wrapper">
     <!-- Main content -->
    
+    
+
     <div class="container-fluid">
-    <div class="card card-info mt-2" style="display: ">
-      <div class="card-header">
-        <h3 class="card-title">General Elements</h3>
-      </div>
-      <!-- /.card-header -->
-      <div class="card-body">
-        <form method="post"  >
-          {% csrf_token %}
+      <div class="row">
+        <div class="col-md-12">
+
+          <!-- Profile Image -->
+          <div class="card card-primary card-outline">
+            <div class="card-body box-profile">
+              <div class="text-center">
+                <img class="profile-user-img img-fluid img-circle"
+                src="/media/{{ user.profile_picture_title }}"
+                alt="User profile picture">
+              </div>
+
+              <h3 class="profile-username text-center">{{user.first_name}} {{user.last_name}}</h3>
+
+              <p class="text-muted text-center">{{ user.role }}</p>
+
+
+
+
+
+              <ul class="list-group list-group-unbordered mb-3">
+                <li class="list-group-item">
+                    <b>First Name</b> <a class="float-right">{{ user.first_name }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Last Name</b> <a class="float-right">{{ user.last_name }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Address</b> <a class="float-right">{{ user.address }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Start Date</b> <a class="float-right">{{ user.start_date }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Hourly Rate</b> <a class="float-right">{{ user.hourly_rate }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Leaves Left</b> <a class="float-right">{{ user.leaves_left }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Phone Number</b> <a class="float-right">{{ user.phone_number }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Email</b> <a class="float-right">{{ user.email }}</a>
+                </li>
+                
+                <li class="list-group-item">
+                    <b>Employment Type</b> <a class="float-right">{{ user.employment_type }}</a>
+                </li>
+            </ul>
+            
+
+            <div class="text-center">
+              <a href="{% url 'core:editProfile' user.id %}" class="btn btn-primary w-25"><b>Edit</b></a>
+          </div>
+          
+        
+              
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+
          
-          <div class="form-group">
-            <label for="role_name">Role Name</label>
-            {{form.role_name}}
-          </div>
+        </div>
         
-          <div class="form-group">
-            <label for="off_days"> Off Days</label>
-            {{form.off_days}}
-          </div>
-        
-  
-          <div class="text-center mt-3 mt-3">
-            <a href="{% url 'core:roles' %}" class="btn btn-danger w-25">Cancel</a>
-            <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
-          </div>
-        </form>
       </div>
-      <!-- /.card-body -->
-    </div>
-  </div>
-
-
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
 
 
 

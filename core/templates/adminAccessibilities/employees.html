@@ -55,6 +55,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <label for="email">Email</label>
             <input type="email" name="email" class="form-control" id="email" placeholder="Enter Email" required>
           </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            {{form.password}}
+          </div>
         
           <div class="form-group" style="display: flex;">
             <div class="col-sm-12">
@@ -330,6 +334,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </div>
             </div>
           </div>
+          
           <div class="text-center mt-3 mt-3">
             <button type="submit" class="btn btn-info w-25"  style="color:white">Submit</button>
           </div>
