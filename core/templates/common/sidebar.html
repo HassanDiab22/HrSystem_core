@@ -109,6 +109,12 @@
                 </a>
             </li>
             {% endif %}
+            <li class="nav-item {% if '/timesheet/' in request.path or '/tasks/' in request.path%}menu-open{% endif %}" >
+                <a href="{% url 'core:timesheets' %}" class="nav-link">
+                    <i class="fas fa-clock"></i>
+                    <p class="ml-1">Timesheet</p>
+                </a>
+            </li>
         </ul>
     </nav>
     

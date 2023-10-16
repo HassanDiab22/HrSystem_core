@@ -17,8 +17,11 @@ urlpatterns = [
     path("employees/", views.EmployeesView.as_view(), name="employees"),
     path("roles/",views.RolesView.as_view(), name="roles"),
     path("leaves/", views.LeavesView.as_view(), name="leaves"),
+    path("timesheet/", views.TimesheetView.as_view(), name="timesheets"),
+    path("tasks/<str:pk>/", views.TasksView.as_view(), name="tasks"),
     path("dashboard/", views.AdminView.as_view(), name="admin"),
     path("employees/<str:pk>/", views.EmployeesView.updateEmployeeView, name="editEmployee"),
+    path("tasks/edit/<str:pk>/", views.TasksView.updateTaskView, name="editTask"),
     path("profile/<str:pk>/", views.ProfileView.updateProfile, name="editProfile"),
     path("role/<str:pk>/", views.RolesView.updateRoleView, name="editRole"),
     path("leaves/<str:pk>/", views.LeavesView.updateLeaveView, name="editLeave"),
@@ -28,6 +31,7 @@ urlpatterns = [
     path("<str:pk>/delete", views.EmployeesView.deleteEmployee, name="deleteEmployee"),
     path("<str:pk>/delete", views.RolesView.deleteRole, name="deleteRole"),
     path("<str:pk>/delete", views.LeavesView.deleteLeave, name="deleteLeave"),
+    path("<str:pk>/delete/task", views.TasksView.deleteTask, name="deleteTask"),
 ]
 
 if settings.DEBUG:

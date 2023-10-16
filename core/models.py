@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from datetime import datetime, timedelta
 from datetime import date
 from .managers import CustomUserManger
 from phonenumber_field.modelfields import PhoneNumberField
@@ -78,3 +79,18 @@ class Leaves(models.Model):
 
 
 
+class Timesheet(models.Model):
+    employee=models.ForeignKey(Employee, on_delete=models.CASCADE)
+    startdate=models.DateField(default=date.today)
+    enddate=models.DateField(default=datetime.now() + timedelta(days=7))
+    total_hours=models.FloatField(default=0.0)
+    def __str__(self):
+        return f"{self.startdate} - {self.enddate}"
+    class Meta:
+        unique_together = ('employee', 'startdate')
+
+
+class Task(models.Model):
+    timesheet=models.ForeignKey(Timesheet, on_delete=models.CASCADE)
+    description=models.TextField()
+    duration=models.FloatField(default=0)

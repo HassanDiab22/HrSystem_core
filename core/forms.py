@@ -1,5 +1,6 @@
-from django.forms import DateField, ModelForm,Select,TextInput,DateInput,NumberInput,DateTimeInput,PasswordInput,FileInput
-from .models import Employee,Role,Leaves
+
+from django.forms import DateField, ModelForm,Select,TextInput,DateInput,NumberInput,Textarea,DateTimeInput,PasswordInput
+from .models import Employee,Role,Leaves, Timesheet,Task
 
 class EmployeeForm(ModelForm):
     
@@ -44,6 +45,44 @@ class EmployeeForm(ModelForm):
                 }),
         }
 
+class TimesheetForm(ModelForm):
+    class Meta:
+        model = Timesheet
+        fields = ['employee','startdate','enddate']
+        widgets = {
+                'startdate': DateInput(attrs={
+                'class': "form-control",
+                'type':'date'
+                }),
+                'enddate': DateInput(attrs={
+                'class': "form-control",
+                'type':'date'
+                }),   
+        }
+
+
+
+       
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ['timesheet','description','duration']
+          
+        widgets = {
+                'description': Textarea(attrs={
+                'class': "form-control",
+                'rows':'3',
+                'placeholder':"Enter description..",
+                'required': 'required' 
+                }),
+                'duration': NumberInput(attrs={
+                'class': "form-control",
+                'required': 'required' 
+                }),   
+        }
+        
+       
 
 
 class ProfileForm(ModelForm):
