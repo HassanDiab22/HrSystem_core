@@ -1,6 +1,9 @@
 
-from django.forms import DateField, ModelForm,Select,TextInput,DateInput,NumberInput,Textarea,DateTimeInput,PasswordInput
+from django.forms import DateField, ModelForm,Select,TextInput,DateInput,NumberInput,Textarea,DateTimeInput,PasswordInput,ValidationError
 from .models import Employee,Role,Leaves, Timesheet,Task
+from django import forms
+from core.validators import validate_timesheet_dates
+
 
 class EmployeeForm(ModelForm):
     
@@ -59,6 +62,17 @@ class TimesheetForm(ModelForm):
                 'type':'date'
                 }),   
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('startdate')
+        end_date = cleaned_data.get('enddate')
+        timesheets=Timesheet.objects.all()
+        validate_timesheet_dates(start_date,end_date,timesheets)
+        
+
+    def save(self, commit=True):
+        return super(TimesheetForm, self).save(commit)
 
 
 

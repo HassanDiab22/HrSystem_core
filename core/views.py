@@ -19,6 +19,9 @@ class indexView(View):
     def get(self,request):
         if request.user.is_authenticated and request.user.is_superuser :
             return HttpResponseRedirect(reverse("core:admin"))
+        elif request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("core:timesheets"))
+
         return render(request, self.template_name)
 
 
@@ -35,7 +38,10 @@ class Login(View):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse("core:admin"))
+                if user.is_superuser:
+                    return HttpResponseRedirect(reverse("core:admin"))
+                else:
+                    return HttpResponseRedirect(reverse("core:timesheets"))
             else:
                 return HttpResponseRedirect(reverse("core:index"))
         except Exception as e:
@@ -180,8 +186,7 @@ class ProfileView (generic.ListView):
                 if employee:
                     profiel_image= request.FILES.get('profile_picture')
 
-                    if profiel_image:
-                         
+                    if profiel_image: 
                          profiel_image_name = profiel_image.name
                     else:
                         profiel_image_name = "defaultProfielPicture.jpg"
@@ -380,7 +385,20 @@ class EmployeesView(generic.ListView):
                 user.set_password(post['password'])
                 form.save()
                 return HttpResponseRedirect(reverse("core:employees"))
-            return HttpResponse(status=400)
+            else:
+                error_text = form.errors.as_text()
+                error_messages = error_text.split('*')
+                error_message = error_messages[2].strip()
+                print(error_message)
+                context = {
+                'active_menu': 'employees',
+                'form':form,
+                'Employees':Employee.objects.filter(is_superuser=False,is_staff=False),
+                'roles':Role.objects.all(),
+                'employment_type':Employee.EMPLOYMENT_TYPES,
+                'error':error_message
+                }
+                return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
 
@@ -402,7 +420,6 @@ class EmployeesView(generic.ListView):
                 roles = Role.objects.all()
                 employment_type = Employee.EMPLOYMENT_TYPES
                 form = EmployeeForm()
-
                 context = {
                     'active_menu': 'employees',
                     'form': form,
