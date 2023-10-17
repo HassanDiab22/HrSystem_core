@@ -6,6 +6,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="en">
 <head>
+  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- SweetAlert2 -->
+  <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+  <!-- Toastr -->
+  <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+  <!-- AdminLTE for demo purposes -->
+  <script src="{% static 'dist/js/demo.js' %}"></script>
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+  <!-- Toastr -->
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+
+
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Management System</title>
@@ -494,7 +517,23 @@ console.log(searchInput);
 
 </script>
 
+<script>
+  {% if error %}
+  $(function() {
+    var Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
 
+    Toast.fire({
+      icon: 'error',
+      title: '{{ error }}'
+    });
+  });
+  {% endif %}
+</script>
 <!-- REQUIRED SCRIPTS -->
 <script src="{% static "plugins/jquery/jquery.min.js" %}"></script>
 <!-- Bootstrap 4 -->

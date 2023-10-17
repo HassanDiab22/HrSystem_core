@@ -7,8 +7,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 import time
-from .models import Employee, Leaves,Role
-from .forms import EmployeeForm, LeaveForm,RoleForm,ProfileForm
+from .models import Employee, Leaves,Role, Timesheet,Task
+from .forms import EmployeeForm, LeaveForm,RoleForm,ProfileForm, TaskForm,TimesheetForm
 from django.contrib import messages
 
 from django.db.models import Q
@@ -19,6 +19,9 @@ class indexView(View):
     def get(self,request):
         if request.user.is_authenticated and request.user.is_superuser :
             return HttpResponseRedirect(reverse("core:admin"))
+        elif request.user.is_authenticated:
+            return HttpResponseRedirect(reverse("core:timesheets"))
+
         return render(request, self.template_name)
 
 
@@ -35,7 +38,10 @@ class Login(View):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return HttpResponseRedirect(reverse("core:admin"))
+                if user.is_superuser:
+                    return HttpResponseRedirect(reverse("core:admin"))
+                else:
+                    return HttpResponseRedirect(reverse("core:timesheets"))
             else:
                 return HttpResponseRedirect(reverse("core:index"))
         except Exception as e:
@@ -74,6 +80,8 @@ class AdminView(View):
             return render(request, self.template_name, context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
+        
+
 
 class RolesView(generic.ListView):
     
@@ -178,8 +186,7 @@ class ProfileView (generic.ListView):
                 if employee:
                     profiel_image= request.FILES.get('profile_picture')
 
-                    if profiel_image:
-                         
+                    if profiel_image: 
                          profiel_image_name = profiel_image.name
                     else:
                         profiel_image_name = "defaultProfielPicture.jpg"
@@ -198,6 +205,146 @@ class ProfileView (generic.ListView):
                     return HttpResponseRedirect(reverse("core:profile"))
         else:
             return HttpResponseRedirect(reverse("core:index"))         
+
+class TimesheetView(generic.ListView):
+    template_name="adminAccessibilities/timesheet.html"
+    
+    def get(self,request):
+        if request.user.is_authenticated:
+            
+            timesheets=Timesheet.objects.filter(employee=request.user)
+            form = TimesheetForm()
+            context = {
+                'active_menu': 'timesheet',
+                'form':form,
+                'timesheets':timesheets,
+            }
+            
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+    def post(self,request):
+        if request.user.is_authenticated:
+            post = request.POST.copy()
+            post['employee'] = Employee.objects.get(email=request.user)
+            request.POST = post
+            form=TimesheetForm(request.POST) 
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse("core:timesheets"))
+            else:
+                # print(form.errors.as_data())
+                # print(form.errors.as_text())
+                error_text = form.errors.as_text()
+                error_messages = error_text.split('*')
+                error_message = error_messages[2].strip()
+                context = {
+                    'active_menu': 'timesheet',
+                    'form': form,
+                    'timesheets': Timesheet.objects.filter(employee=request.user),
+                    'error':error_message
+                }
+                return render(request, self.template_name, context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+        
+class TasksView(generic.ListView):
+    template_name="adminAccessibilities/tasks.html"
+
+    def get(self,request,pk):
+        if request.user.is_authenticated:
+            pk = int(pk) 
+            tasks=Task.objects.filter(timesheet=pk)
+            timesheet=Timesheet.objects.get(id=pk)
+            form = TaskForm()
+            context = {
+                'active_menu': 'timesheet',
+                'form':form,
+                'tasks':tasks,
+                'timesheet':timesheet
+            }
+            
+            return render(request,self.template_name,context)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+    def post(self,request,pk):
+        if request.user.is_authenticated:
+            post = request.POST.copy()
+            pk = int(pk) 
+            post['timesheet'] = Timesheet.objects.get(id=pk)
+            request.POST = post
+            form=TaskForm(request.POST) 
+
+            if form.is_valid():
+                form.save()
+                timesheet=Timesheet.objects.get(id=pk)
+                tasks=Task.objects.filter(timesheet=timesheet)
+                total_hours=0.0
+                for task in tasks:
+                    total_hours+=task.duration
+                timesheet.total_hours=total_hours
+                timesheet.save()
+                tasks_url = reverse("core:tasks", kwargs={'pk': pk})
+                return HttpResponseRedirect(tasks_url)
+            return HttpResponse(status=400)
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+        
+    def updateTaskView(request, pk):
+        if request.user.is_authenticated :
+            if request.method == "GET":
+                pk = int(pk)
+                print(pk)
+                task = Task.objects.get(id=pk)
+                form = TaskForm(instance=task)
+                context = {'form': form,
+                           'active_menu': 'timesheet',}
+                return render(request, 'adminAccessibilities/editTask.html', context)
+            if request.method == "POST":    
+                post = request.POST.copy()
+                pk = int(pk) 
+                print(pk)
+                task = Task.objects.get(id=pk)
+                post['timesheet'] = task.timesheet
+                request.POST = post
+                if task:
+                    form = TaskForm(request.POST, instance=task)
+                    if form.is_valid():
+                        form.save()
+                        timesheet=task.timesheet
+                        tasks=Task.objects.filter(timesheet=timesheet)
+                        total_hours=0.0
+                        for task in tasks:
+                            total_hours+=task.duration
+                        timesheet.total_hours=total_hours
+                        print(timesheet.total_hours)
+                        timesheet.save()
+                        tasks_url = reverse("core:tasks", kwargs={'pk': timesheet.id})
+                        return HttpResponseRedirect(tasks_url)
+                else:
+                    return HttpResponseRedirect(reverse("core:index"))
+        else:
+            return HttpResponseRedirect(reverse("core:index"))
+        
+    def deleteTask(request, pk):
+           
+           if request.user.is_authenticated :
+               pk = int(pk) 
+               task = Task.objects.get(id=pk)
+               id=task.timesheet.id
+               timesheet=task.timesheet
+               task.delete()
+               tasks=Task.objects.filter(timesheet=timesheet)
+               total_hours=0.0
+               for task in tasks:
+                   total_hours+=task.duration
+               timesheet.total_hours=total_hours
+               timesheet.save()
+               tasks_url = reverse("core:tasks", kwargs={'pk': id})
+               return HttpResponseRedirect(tasks_url)
+           else:
+            return HttpResponseRedirect(reverse("core:index"))
+
 
 
         
@@ -238,7 +385,20 @@ class EmployeesView(generic.ListView):
                 user.set_password(post['password'])
                 form.save()
                 return HttpResponseRedirect(reverse("core:employees"))
-            return HttpResponse(status=400)
+            else:
+                error_text = form.errors.as_text()
+                error_messages = error_text.split('*')
+                error_message = error_messages[2].strip()
+                print(error_message)
+                context = {
+                'active_menu': 'employees',
+                'form':form,
+                'Employees':Employee.objects.filter(is_superuser=False,is_staff=False),
+                'roles':Role.objects.all(),
+                'employment_type':Employee.EMPLOYMENT_TYPES,
+                'error':error_message
+                }
+                return render(request,self.template_name,context)
         else:
             return HttpResponseRedirect(reverse("core:index"))
 
@@ -260,7 +420,6 @@ class EmployeesView(generic.ListView):
                 roles = Role.objects.all()
                 employment_type = Employee.EMPLOYMENT_TYPES
                 form = EmployeeForm()
-
                 context = {
                     'active_menu': 'employees',
                     'form': form,

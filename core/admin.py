@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Employee,Leaves,Country,Role
+from .models import Employee,Leaves,Country,Role,Task,Timesheet
 
 # Register your models here
 
@@ -28,6 +28,8 @@ class CountryAdmin(admin.ModelAdmin):
     search_fields=['name']
     list_filter=['name']       
 
+admin.site.register(Task)
+admin.site.register(Timesheet)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Employee,EmployeeAdmin)
 admin.site.register(Leaves,LeavesAdmin)
